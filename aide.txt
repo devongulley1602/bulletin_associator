@@ -1,0 +1,48 @@
+Appuyez sur Q en tout temps pour quitter ce menu d’aide.
+Si vous cherchez quelque chose en particulier, appuyez sur / pour rechercher, : pour arrêter la recherche.
+
+Il s'agit d'un espace réservé pour un document d'aide plus complet s'il devait être créé.
+
+Pourboires:
+    - Vous pouvez copier depuis Konsole en double-cliquant sur une URL puis en appuyant sur Ctrl+Maj+C
+    - Vous pouvez coller dans Konsole en appuyant sur Ctrl+Maj+V
+    - N'hésitez pas à modifier ce document d'aide si vous souhaitez ajouter quelque chose /net/local/home/gulleyd/Documents/Scripts/request
+
+L'associateur de bulletins charge WW (avertissement météorologique), WO (avis météorologique ou bulletin météorologique spécial), AW (résumés), WF (avertissement de tornade) et WU (alerte de tempête) à partir du Data Mart des bulletins météorologiques (https://dd.weather.gc.ca/bulletins/alphanumeric/) dans une période spécifiée. Il les charge dans une liste principale de bulletins.
+
+Dans le menu de recherche des bulletins associés, vous pouvez associer la liste principale :
+    - Cela prendra la liste principale et calculera dans quelle mesure l'associateur pense qu'elle est liée à chaque autre bulletin chargé.
+    - Si vous souhaitez parcourir ou réduire la liste principale, vous pouvez accéder au menu de navigation.
+    - Pour chaque combinaison (et non permutation) de bulletins dans la liste principale avançant ou reculant dans le temps, il attribue une chaîne de bulletins exaltés par ordre décroissant. Je n'ai pas trouvé d'appel intelligent pour ça, donc pour l'instant, on l'appelle simplement « chaîne ».
+
+Dans le menu de navigation, vous avez la possibilité de réduire la liste en :
+    - Recherche de mots-clés
+    - Sélection pour le français ou l'anglais
+    - Sélection d'un type particulier d'avertissement (tel que AW ou WW)
+Vous pouvez continuer à parcourir votre liste sans apporter de modifications à la liste principale, ou il devrait y avoir une option de menu pour remplacer la liste principale par la vôtre.
+
+Voici une brève description du fonctionnement de l'association des bulletins et de ce qu'elle est à peu près :
+    - Il utilise le script url_retriever.sh pour sélectionner les bulletins de type WO WW AW WF pour CWUL dans une période sélectionnée
+    - Après cela, il attribue une valeur de corrélation particulière entre chaque bulletin et chaque autre bulletin récupéré
+    - Il crée une bibliothèque de bulletins associés enchaînés en fonction de leur corrélation avec le bulletin clé en question
+    - Cette bibliothèque est accessible en utilisant l'URL du bulletin clé comme clé
+    - Chaque élément de la bibliothèque est trié par ordre décroissant en fonction de sa valeur de corrélation entre 0 et 1, les bulletins associés les plus corrélés s'affichant en premier
+    - Chaque élément de la bibliothèque est sous la forme (bulletin clé, bulletin associé, valeur de corrélation)
+
+ Lorsque vous utilisez le menu, vous pouvez créer et accéder ultérieurement à cette bibliothèque en associant des bulletins.
+ Associer les bulletins en arrière signifie que pour un bulletin clé donné, il tentera de se corréler uniquement avec les bulletins du passé.
+ Associer des bulletins vers l'avant signifie que pour un bulletin clé donné, il tentera de se corréler uniquement avec les bulletins dans le futur.
+    - Cette étape n'est jamais effectuée lors de la récupération de la liste des bulletins, mais uniquement sur l'algorithme d'association.
+
+
+Si vous êtes à l'aise avec Python, n'hésitez pas à activer l'environnement virtuel contenant toutes les exigences de cet outil et à importer la bibliothèque bulletin_associator. J'ai dû modifier beaucoup de propriétés de bibliothèques diverses pour permettre à tout cela de fonctionner dans Python 2.7, mais il semble que ça marche pour le moment.
+
+Dans bash :
+$ source /net/local/home/gulleyd/public_html/bulletin/python_virtual_environment/venv/bin
+$ cd /net/local/home/gulleyd/public_html/bulletin
+
+Ensuite, dans un shell Python :
+> from bulletin_associator import *
+> from bulletin import bulletin
+
+Appuyez sur Q pour quitter ce menu d'aide.
