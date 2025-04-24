@@ -159,7 +159,22 @@ def url_by_language(lang_code = 'CN7'):
     
     if bulletin_list != None:
         bulletin_list = [b for b in bulletin_list if lang_code in b.url]
+
+def variable_f(matched_list):
+    print('\n{0} bulletins dans cette liste'.format(len(matched_list)))
+    print('Correspondent au type demandé\n')
+    selection = submenu(['Chercher un autre type','Montrer le corps du texte de chaucun','Enregistrer cette liste et revenir à l\'outil de navigation','Revenir à l\'outil de navigation'])
     
+    if selection == '1':
+        url_by_variable(list_to_search)
+    elif selection == '2':
+        print_bulletin_text(matched_list,False)
+        variable_f(matched_list)
+    elif selection == '3':
+        bulletin_list = matched_list
+        browser()
+    elif selection == '4':
+        browser()
 
 def url_by_variable(list_to_search):
     global bulletin_list
@@ -174,17 +189,7 @@ def url_by_variable(list_to_search):
                 matched_list.append(b)
                 
     if matched_list != []:
-        print('\n{0} bulletins dans cette liste'.format(len(matched_list)))
-        print('Correspondent au type demandé\n')
-        selection = submenu(['Chercher un autre type','Enregistrer cette liste et revenir à l\'outil de navigation','Revenir à l\'outil de navigation'])
-        
-        if selection == '1':
-            url_by_variable(list_to_search)
-        elif selection == '2':
-            bulletin_list = matched_list
-            browser()
-        elif selection == '3':
-            browser()
+        variable_f(matched_list)
     else:
         print('Type de bulletin pas trouvé dans votre liste')
         selection = submenu(['Chercher un autre type','Revenir à l\'outil de navigation'])
@@ -192,7 +197,26 @@ def url_by_variable(list_to_search):
             url_by_variable(list_to_search)
         elif selection == '2':
             browser()
-            
+
+def keyword_f(matched_list):
+    print('Mot-clé détecté dans les bulletins suivants:')
+    for i in matched_list:
+        print(i.url)
+    print('\n{0} bulletins dans cette liste'.format(len(matched_list)))
+
+    print('\nQu\'est-ce que vous aimez faire?')
+    selection = submenu(['Chercher dans cette liste un autre mot-clé','Montrer le corps du texte de chaucun','Enregistrer cette liste et revenir à l\'outil de navigation','Revenir à l\'outil de navigation'])
+    
+    if selection == '1':
+        keyword_search(matched_list)
+    elif selection == '2':
+        print_bulletin_text(matched_list, False)
+        keyword_f(matched_list)
+    elif selection =='3':
+        bulletin_list = matched_list    
+        browser()
+    elif selection == '4':
+        browser()
             
 def keyword_search(list_to_search):
     global bulletin_list
@@ -211,21 +235,8 @@ def keyword_search(list_to_search):
             browser()
             
     else: # The keywrod exists in list_to_search
-        print('Mot-clé détecté dans les bulletins suivants:')
-        for i in matched_list:
-            print(i.url)
-        print('\n{0} bulletins dans cette liste'.format(len(matched_list)))
-
-        print('\nQu\'est-ce que vous aimez faire?')
-        selection = submenu(['Chercher dans cette liste un autre mot-clé','Enregistrer cette liste et revenir à l\'outil de navigation','Revenir à l\'outil de navigation'])
-        
-        if selection == '1':
-            keyword_search(matched_list)
-        elif selection =='2':
-            bulletin_list = matched_list    
-            browser()
-        elif selection == '3':
-            browser()
+       keyword_f(matched_list)
+       
         
 def print_related(num_elements,url):
     """
@@ -262,7 +273,7 @@ def bulletins_from_url():
     
     if chain == None:
         print('Trouver les bulletins:\n')
-        selection = submenu(['Plus vieux que le mien (chercher en arrière dans le temps)','Plus récents que le mien (chercher en avant dans le temps)'])
+        selection = submenu(['Plus vieux que le mien (chercher en arrière dans le temps)','Plus récents que le mien (chercher en avant dans le temps)', 'Revenir à l\'outil de navigation'])
         
         
         if selection == '1': # Older than my bulletin (look backwards in time)
@@ -313,12 +324,12 @@ def browser():
         sys('clear')
         print('-- Outil de navigation des {0} bulletins chargé --'.format(len(bulletin_list)))
         
-        selection = submenu(['Chercher un mot-clé','Énumérer les bulletins chargés','Récuperer par type (comme AW WW)', 'Charger bulletins differents','Outil de similarité des descriptions','Aide', 'Sortir'])
+        selection = submenu(['Chercher un mot-clé','Chercher un type (comme AW WW)','Énumérer les bulletins chargés', 'Charger bulletins differents','Outil de similarité des descriptions','Aide', 'Sortir'])
         if selection == '1':
             keyword_search(bulletin_list)
-        elif selection == '2': # List loaded bulletins
+        elif selection == '3': # List loaded bulletins
             print_bulletins()
-        elif selection == '3':
+        elif selection == '2':
             sys('clear')
             url_by_variable(bulletin_list)
         elif selection == '4':
@@ -327,6 +338,7 @@ def browser():
             bulletins_from_url()
         elif selection == '6':
             sys('less aide.txt')
+            browser()
         elif selection == '7':
             quit()
     else: # To load bulletins before browsing
